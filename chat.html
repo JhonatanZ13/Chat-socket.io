@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="container mt-5" id="login" style="display: none;">
+        <div class="jumbotron">
+            <h4 class="display-4">Bienvenido al chat</h4>
+        </div>
+        <div class="form-group">
+            <div class="col-md-6">
+                <label for="">Ingrese su nickname</label>
+                <input type="text" class="form-control" id="username">
+            </div>
+            <div class="col-md-3 mt-5">
+                <input type="button" class="btn btn-success" id="botoningresar" value="Siguiente">
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="chat" style="display: none;">
+        <div class="jumbotron">
+            <h4 class="display-4">Chat</h4>
+        </div>
+        <div class="container">
+            <h3>Bienvenido al chat!</h3>
+            <div id="chatmensajes" style="height: 500px; border:1px solid black; padding: 10px;"></div>
+
+            <div class="row mt-3">
+                <div class="col-md-11">
+                    <input type="text" class="form-control" placeholder="Escriba su mensaje..." id="mensaje">
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-primary" id="enviarmsj">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+        integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        $(document).ready(function () {
+            $('#login').fadeIn(500);
+        });
+
+        $('#botoningresar').click(function () {
+            var username = $('#username').val();
+            console.log(username);
+            socket.emit('crearUsuario', username);
+            $('#login').fadeOut(500, function () {
+
+            });
+            $('#chat').fadeIn(500);
+        });
+        $('#enviarmsj').click(function () {
+            var mensaje = $('#mensaje').val();
+            console.log(mensaje);
+            $('#mensaje').val('');
+            socket.emit('mensajeNuevo', mensaje);
+        });
+        socket.on('mensaje', function(data){
+            var nuevomsj = "<b>"+data.usuario+': '+data.mensaje+"</b> <br>";
+            $('#chatmensajes').append(nuevomsj);
+        });
+    </script>
+</body>
+
+</html>
